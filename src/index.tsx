@@ -1,15 +1,23 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import '/node_modules/react-grid-layout/css/styles.css';
+import '/node_modules/react-resizable/css/styles.css';
 import reportWebVitals from './reportWebVitals';
+import Theme from "./Components/Providers/Theme/Theme";
+import Routes from "./Routes/Routes";
+import Fallback from "./Components/SuspenseFallback/SuspenseFallback";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <Theme>
+      <Suspense fallback={<Fallback/>}>
+          <Routes/>
+      </Suspense>
+    </Theme>
   </React.StrictMode>
 );
 
