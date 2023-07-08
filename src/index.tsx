@@ -1,5 +1,5 @@
 import React, {Suspense} from 'react';
-import ReactDOM from 'react-dom/client';
+import {createRoot} from 'react-dom/client';
 import './index.css';
 import '/node_modules/react-grid-layout/css/styles.css';
 import '/node_modules/react-resizable/css/styles.css';
@@ -8,9 +8,8 @@ import Theme from "./Components/Providers/Theme/Theme";
 import Routes from "./Routes/Routes";
 import Fallback from "./Components/SuspenseFallback/SuspenseFallback";
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const container = document.getElementById('root');
+const root = createRoot(container!); // createRoot(container!) if you use TypeScript
 root.render(
   <React.StrictMode>
     <Theme>

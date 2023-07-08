@@ -1,7 +1,10 @@
 import axios from "axios";
 
-export const podServicePath = axios.create({baseURL: `https://argos-iot.com/webservice`});
-export const servicePath = axios.create({baseURL: `https://argos-dev-e2meo7r36a-ew.a.run.app/api/v1`});
+export const servicePath = axios.create(
+    {
+      baseURL: `http://ec2-16-171-145-236.eu-north-1.compute.amazonaws.com/api/`
+    }
+);
 
 
 

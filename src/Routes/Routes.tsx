@@ -4,33 +4,46 @@ import React, {lazy} from 'react';
 import {AlertProvider} from "../Components/Providers/Alert/Alert.provider";
 import {ConfirmationProvider} from "../Components/Providers/ConfirmDialog/ConfirmDialog.provider";
 import {BoardsPage} from "./Private/Boards/Boards.page";
+import {BoardPage} from "./Private/Boards/Board.page";
+import PageFrame from "../Components/PageFrame/PageFrame";
+import {AuthProvider, RequireAuth} from "../Components/Providers/Authorization/Authorization.provider";
 
 
-const Login = lazy(() => import("./Public/login/login.page"));
+const Login = lazy(() => import("./Public/Login/Login.page"));
+const Signup = lazy(() => import("./Public/Signup/Signup.page"));
 const NoMatch = lazy(() => import("./NoMatch/NoMatch"));
 
 const Routes = () => {
   return (
-    <AlertProvider>
-      <ConfirmationProvider>
-        <BrowserRouter>
-          <Router>
-            <Route path="/" element={<Login/>}/>
-            <Route path="login" element={<Login/>}/>
-            <Route path="/app" element={<Outlet/>}>
-              <Route path="boards" element={<BoardsPage/>}>
-                <Route path=":boardId" element={<>board</>}/>
-                <Route path=":boardId/edit" element={<>board edit</>}/>
-              </Route>
-              <Route path="*" element={<NoMatch/>}/>
-            </Route>
-            <Route path="/app/settings" element={<></>}/>
-            <Route path="*" element={<NoMatch/>}/>
-          </Router>
-        </BrowserRouter>
-      </ConfirmationProvider>
-    </AlertProvider>
-  );
+      <AuthProvider>
+        <AlertProvider>
+          <ConfirmationProvider>
+            <BrowserRouter>
+              <Router>
+                <Route path="/" element={<Login/>}/>
+                <Route path="login" element={<Login/>}/>
+                <Route path="signup" element={<Signup/>}/>
+                <Route path="/app" element={
+                  <PageFrame>
+                    <RequireAuth>
+                      <Outlet/>
+                    </RequireAuth>
+                  </PageFrame>
+                }>
+                  <Route path="boards" element={<BoardsPage/>}>
+                    <Route path=":boardId" element={<BoardsPage/>}/>
+                    <Route path=":boardId/edit" element={<BoardPage/>}/>
+                  </Route>
+                  <Route path="*" element={<NoMatch/>}/>
+                </Route>
+                <Route path="*" element={<NoMatch/>}/>
+              </Router>
+            </BrowserRouter>
+          </ConfirmationProvider>
+        </AlertProvider>
+      </AuthProvider>
+  )
+      ;
 }
 
 export default Routes;

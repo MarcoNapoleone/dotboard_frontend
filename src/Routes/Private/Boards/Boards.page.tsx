@@ -1,34 +1,89 @@
 import PageFrame from "../../../Components/PageFrame/PageFrame";
-import { Responsive as ResponsiveGridLayout } from "react-grid-layout";
-import React from "react";
-import {Box, Card, Container, Grid, useMediaQuery} from "@mui/material";
+import {Responsive, WidthProvider} from "react-grid-layout";
+import React, {ReactNode, useContext, useEffect, useMemo, useState} from "react";
+import _ from "lodash";
+import {Box, Card, Container, Grid, Grow, useMediaQuery} from "@mui/material";
 import theme from "@mui/material/styles/defaultTheme"
+import {useTheme} from "@mui/material/styles";
+import {getUpdatedTime} from "../../../utils/dateHandler";
+import {useAlert, useAlertContext} from "../../../Components/Providers/Alert/Alert.provider";
+import {useConfirmation} from "../../../Components/Providers/ConfirmDialog/ConfirmDialog.provider";
+import MainPage from "../../../Components/MainPage/MainPage";
+import AddCard from "../../../Components/AddCard/AddCard";
+import BoardCard from "../../../Components/BoardCard/BoardCard";
+import {defaultBoards, getAllBoards} from "../../../services/boards.services";
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../../../Components/Providers/Authorization/Authorization.provider";
+import {getReasonAlert} from "../../../utils/requestAlertHandler";
 
 export const BoardsPage = () => {
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const layout = [
-    { i: "a", x: 0, y: 0, w: 2, h: 2, static: true },
-    { i: "b", x: 1, y: 0, w: 3, h: 2, minW: 2, maxW: 4 },
-    { i: "c", x: 4, y: 0, w: 1, h: 2 }
-  ];
+  const [boards, setBoards] = useState(defaultBoards);
+  const [loading, setLoading] = useState(true);
+  const {setAlertEvent} = useAlert();
+  const navigate = useNavigate();
+  const {loggedUser, setLoggedUser} = useAuth();
+  const [updatedTime, setUpdatedTime] = useState(getUpdatedTime());
+
+  useEffect(() => {
+    handleRefresh()
+  }, []);
+
+  const fetchData = async () => {
+    const res = await getAllBoards()
+    setBoards(res);
+  }
+
+  const handleRefresh = async () => {
+    setLoading(true)
+    fetchData()
+        .then(() => setLoading(false))
+        .catch((err) => {
+          setAlertEvent(getReasonAlert(err));
+          setLoading(false)
+        })
+  }
+
+
   return (
-   <PageFrame>
-     <Container maxWidth="xl" disableGutters={isMobile}>
-       <Grid container justifyContent="center" direction="column" spacing={1} pt={10}>
-     <ResponsiveGridLayout
-       className="layout"
-       breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-       layouts={layout}
-       cols={{ lg: 6, md: 6, sm: 3, xs: 2, xxs: 2 }}
-       rowHeight={30}
-       width={1200}
-     >
-       <Card key="a" ><Box p={2}>a</Box></Card>
-       <Card key="b" ><Box p={2}>b</Box></Card>
-       <Card key="c" ><Box p={2}>c</Box></Card>
-     </ResponsiveGridLayout>
-       </Grid>
-     </Container>
-   </PageFrame>
+      <MainPage
+          title="Le tue board"
+          onRefresh={handleRefresh}
+          updatedTime={updatedTime}
+      >
+        <Grid container spacing={2}>
+          <Grid item xs={12} container spacing={2}>
+            {loading
+                ? <>
+                  <Grid item xs={12} md={4}>
+                    <AddCard disabled/>
+                  </Grid>
+                  {[...Array(5)].map((el, index) => (
+                          <Grow in style={{transitionDelay: `50ms`}}>
+                            <Grid key={index.toString()} item xs={12} md={4}>
+                              <BoardCard isLoading/>
+                            </Grid>
+                          </Grow>
+                      )
+                  )}
+                </>
+                : <>
+                  <Grow in style={{transitionDelay: `50ms`}}>
+                    <Grid item xs={12} md={4}>
+                      <AddCard onClick={() => {
+                      }}/>
+                    </Grid>
+                  </Grow>
+                  {boards.map((el, index) => (
+                      <Grow key={index.toString()} in style={{transitionDelay: `${index * 50}ms`}}>
+                        <Grid item xs={12} md={4}>
+                          <BoardCard board={el}/>
+                        </Grid>
+                      </Grow>
+                  ))}
+                </>
+            }
+          </Grid>
+        </Grid>
+      </MainPage>
   );
 }
