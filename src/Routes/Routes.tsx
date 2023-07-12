@@ -7,6 +7,7 @@ import {BoardsPage} from "./Private/Boards/Boards.page";
 import {BoardPage} from "./Private/Boards/Board.page";
 import PageFrame from "../Components/PageFrame/PageFrame";
 import {AuthProvider, RequireAuth} from "../Components/Providers/Authorization/Authorization.provider";
+import {ApisPage} from "./Private/Apis/Apis.page";
 
 
 const Login = lazy(() => import("./Public/Login/Login.page"));
@@ -30,9 +31,11 @@ const Routes = () => {
                     </RequireAuth>
                   </PageFrame>
                 }>
-                  <Route path="boards" element={<BoardsPage/>}>
-                    <Route path=":boardId" element={<BoardsPage/>}/>
-                    <Route path=":boardId/edit" element={<BoardPage/>}/>
+                  <Route path="boards" element={<BoardsPage/>}/>
+                  <Route path="boards/:boardId" element={<BoardPage/>}/>
+                  <Route path="boards/:boardId/edit" element={<BoardPage/>}/>
+                  <Route path="apis" element={<ApisPage/>}>
+                    <Route path=":apiId" element={<BoardsPage/>}/>
                   </Route>
                   <Route path="*" element={<NoMatch/>}/>
                 </Route>

@@ -15,17 +15,13 @@ import {defaultBoards, getAllBoards} from "../../../services/boards.services";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../../Components/Providers/Authorization/Authorization.provider";
 import {getReasonAlert} from "../../../utils/requestAlertHandler";
-import AddDialog from "../../../Components/AddDialog/AddDialog";
-import TextField from "@mui/material/TextField";
-import DialogFormLabel from "../../../Components/DialogFormLabel/DialoFormLabel";
 
-export const BoardsPage = () => {
+export const ApiPage = () => {
   const [boards, setBoards] = useState(defaultBoards);
   const [loading, setLoading] = useState(true);
   const {setAlertEvent} = useAlert();
   const navigate = useNavigate();
-  const [openAddDialog, setOpenAddDialog] = useState(false);
-
+  const {loggedUser, setLoggedUser} = useAuth();
   const [updatedTime, setUpdatedTime] = useState(getUpdatedTime());
 
   useEffect(() => {
@@ -47,11 +43,6 @@ export const BoardsPage = () => {
         })
   }
 
-  const handleSubmitCreate = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-
-  };
 
   return (
       <MainPage
@@ -67,8 +58,8 @@ export const BoardsPage = () => {
                     <AddCard disabled/>
                   </Grid>
                   {[...Array(5)].map((el, index) => (
-                          <Grow in key={index.toString()} style={{transitionDelay: `50ms`}}>
-                            <Grid  item xs={12} md={4}>
+                          <Grow in style={{transitionDelay: `50ms`}}>
+                            <Grid key={index.toString()} item xs={12} md={4}>
                               <BoardCard isLoading/>
                             </Grid>
                           </Grow>
@@ -78,13 +69,14 @@ export const BoardsPage = () => {
                 : <>
                   <Grow in style={{transitionDelay: `50ms`}}>
                     <Grid item xs={12} md={4}>
-                      <AddCard onClick={() => setOpenAddDialog(true)}/>
+                      <AddCard onClick={() => {
+                      }}/>
                     </Grid>
                   </Grow>
                   {boards.map((el, index) => (
                       <Grow key={index.toString()} in style={{transitionDelay: `${index * 50}ms`}}>
                         <Grid item xs={12} md={4}>
-                          <BoardCard board={el} onClick={() => navigate(`${el.id}`)}/>
+                          <BoardCard board={el}/>
                         </Grid>
                       </Grow>
                   ))}
@@ -92,40 +84,6 @@ export const BoardsPage = () => {
             }
           </Grid>
         </Grid>
-        <AddDialog
-            title={"Crea una nuova board"}
-            open={openAddDialog}
-            setOpen={setOpenAddDialog}
-            submitButtonText={"Crea"}
-            handleSubmit={handleSubmitCreate}
-        >
-          <Grid container direction="column" spacing={1}>
-            <Grid item container spacing={1}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                    id="name"
-                    name="name"
-                    label="Name"
-                    autoFocus
-                    autoComplete="name"
-                    fullWidth
-                    required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                    id="description"
-                    name="description"
-                    label="Descrizione"
-                    autoComplete="description"
-                    multiline
-                    fullWidth
-                    required
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </AddDialog>
       </MainPage>
   );
 }

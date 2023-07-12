@@ -10,6 +10,8 @@ export class Board {
   deletedAt?: Date;
   version?: number;
   updatedAt?: Date;
+  publicLink?: string;
+  description?: string;
 }
 
 

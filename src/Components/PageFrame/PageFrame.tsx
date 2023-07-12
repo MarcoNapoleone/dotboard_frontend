@@ -77,12 +77,10 @@ const PageFrame: React.FC<PageFrameProps> = ({children, title}) => {
   const isLargeScreen = useMediaQuery(theme.breakpoints.up("xl"))
   const [open, setOpen] = React.useState(Boolean(isLargeScreen));
   const location = useLocation();
-  const {companyId} = useParams<PageParamsType>();
-  const [nestedListToggle, setNestedListToggle] = useState(true)
-  const pagePath = location.pathname.split('/')[4];
-  const isCompanyBasePath = location.pathname.split('/')[4] === 'companies' && pagePath === undefined;
+  const pagePath = location.pathname.split('/')[2];
 
   const handlePageSelection = (pagePath: string) => {
+    navigate(`/app/${pagePath}`);
     handleDrawerClose();
   }
 
@@ -107,16 +105,7 @@ const PageFrame: React.FC<PageFrameProps> = ({children, title}) => {
       localStorage.setItem("theme", JSON.stringify({mode: 'light', palette: palette}))
     }
   };
-  const handleNestedListToggle = (event: any) => {
-    const element = document.getElementById("drawer-content-id");
-    if (open) {
-      setNestedListToggle(!nestedListToggle)
-    } else {
-      setOpen(true)
-      element.scrollTo(0, element.scrollHeight);
-      setNestedListToggle(true)
-    }
-  };
+
 
   const DrawerContent = () => {
 
@@ -164,43 +153,6 @@ const PageFrame: React.FC<PageFrameProps> = ({children, title}) => {
                   />
                 </ListItemButton>
               ))}
-              {/*<ListItemButton
-            onClick={(event) => handleNestedListToggle(event)}
-            key={1}
-            sx={{height: isMobile ? '48px' : '57px', py: '8px'}}
-            selected={location.pathname === 'app/pod'}
-          >
-            <ListItemIcon>
-              <SensorsIcon sx={{color: location.pathname === '/home' ? 'primary.main' : ''}}/>
-            </ListItemIcon>
-            <ListItemText primary="Pod"/>
-            <ExpandLess sx={{
-              transform: !nestedListToggle ? 'rotate(180deg)' : 'none',
-              transition: theme.transitions.create('all', {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.standard,
-              }),
-            }}/>
-          </ListItemButton>
-          <Collapse in={nestedListToggle && open} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <Box pb={1}>
-              <ListItemButton sx={{pl: 4}} onClick={() => navigate('/app/pod')}>
-                <ListItemText primary="Sala macchine"/>
-              </ListItemButton>
-              </Box>
-              <Box pb={1}>
-              <ListItemButton sx={{pl: 4}} onClick={() => navigate('/app/pod')}>
-                <ListItemText primary="Ventola Nord"/>
-              </ListItemButton>
-              </Box>
-              <Box pb={1}>
-              <ListItemButton sx={{pl: 4}} onClick={() => navigate('/app/pod')}>
-                <ListItemText primary="Ventola Sud"/>
-              </ListItemButton>
-              </Box>
-            </List>
-          </Collapse>*/}
             </List>
           </div>
           <List
@@ -236,7 +188,7 @@ const PageFrame: React.FC<PageFrameProps> = ({children, title}) => {
               <ListItemText
                 primary={theme.palette.mode === 'dark'
                   ? "Light theme"
-                  : "dark theme"
+                  : "Dark theme"
                 }
               />
             </ListItemButton

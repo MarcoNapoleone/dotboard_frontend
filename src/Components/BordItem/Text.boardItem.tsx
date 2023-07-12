@@ -1,6 +1,17 @@
 import React from "react";
 import {useTheme} from "@mui/material/styles";
-import {alpha, Box, Card, CardActionArea, CardContent, Chip, Grid, Skeleton, Typography} from "@mui/material";
+import {
+  alpha,
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  Chip,
+  Container,
+  Grid,
+  Skeleton,
+  Typography
+} from "@mui/material";
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import {getFormattedDate} from "../../utils/dateHandler";
 import {Board} from "../../services/boards.services";
@@ -8,26 +19,22 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 type CompanyCardProps = {
-  board?: Board,
+  title: string,
+  caption: string,
   isLoading?: boolean,
   onClick?: () => void
 }
 
-const BoardCard: React.FC<CompanyCardProps> = (
+const TextBoardItem: React.FC<CompanyCardProps> = (
     {
-      board,
+      title,
+      caption,
       isLoading,
       onClick
     }
 ) => {
 
   const theme = useTheme();
-
-  const getLabel = (board: Board) => {
-    if (board.publicLink === "" || board.publicLink === null) {
-      return "Privata"
-    } else return "Condivisa";
-  }
 
   return (
       <>
@@ -64,38 +71,14 @@ const BoardCard: React.FC<CompanyCardProps> = (
                 height: '100%',
               }} onClick={onClick}>
                 <CardContent>
-                  <Grid container direction="row" justifyContent="space-between">
-                    <Grid item xs="auto" container alignItems="center" spacing={1}>
-                      <Grid item>
-                        <Box color="text.secondary">
-                          <AccessTimeOutlinedIcon fontSize="small" color="inherit"/>
-                        </Box>
-                      </Grid>
-                      <Grid item>
-                        <Typography gutterBottom variant="body2" component="div" color="text.secondary">
-                          {getFormattedDate(board.createdAt)}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Typography variant="h5">
-                    {board.name}
-                  </Typography>
-                  <Box pb={1}>
-                    <Typography gutterBottom variant="body1" component="div" color="text.secondary">
-                      {board.description}
+                  <Container>
+                    <Typography gutterBottom variant="h4" component="div">
+                      {title}
                     </Typography>
-                  </Box>
-                      <Chip
-                          size="small"
-                          sx={{
-                            color: theme.palette.secondary.main,
-                            backgroundColor: alpha(theme.palette.secondary.main, 0.2),
-                          }}
-                          icon={getLabel(board) === "Privata" ? <LockOutlinedIcon/> : <PeopleAltOutlinedIcon/>}
-                          color={'secondary'}
-                          label={getLabel(board)}
-                      />
+                    <Typography variant="body2" color="text.secondary">
+                      {caption}
+                    </Typography>
+                  </Container>
                 </CardContent>
               </CardActionArea>
             </Card>
@@ -104,4 +87,4 @@ const BoardCard: React.FC<CompanyCardProps> = (
   )
 }
 
-export default BoardCard;
+export default TextBoardItem;

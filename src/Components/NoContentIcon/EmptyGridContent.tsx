@@ -1,10 +1,10 @@
 import React from "react";
-import {createTheme, useTheme} from "@mui/material/styles";
 import {createStyles, makeStyles, Stack, Typography} from "@mui/material";
 import DataObjectOutlinedIcon from '@mui/icons-material/DataObjectOutlined';
+import {useTheme} from "@mui/material/styles";
 
-const defaultTheme = createTheme();
-const useStyles = makeStyles((theme) => createStyles({
+
+makeStyles((theme) => createStyles({
   root: {
     flexDirection: 'column',
     '& .ant-empty-img-1': {
@@ -24,8 +24,7 @@ const useStyles = makeStyles((theme) => createStyles({
       fill: theme.palette.mode === 'light' ? '#f5f5f5' : '#fff',
     },
   },
-}), {defaultTheme},);
-
+}));
 const EmptyGridContent = (props: { caption?: string }) => {
   const theme = useTheme();
   return (
