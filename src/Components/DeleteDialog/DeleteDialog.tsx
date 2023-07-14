@@ -44,17 +44,17 @@ const DeleteDialog: React.FC<DeleteDialogProps> = (
       TransitionComponent={Fade}
       maxWidth="xl"
     >
-      <DialogTitle>{"Delete " + title}</DialogTitle>
+      <DialogTitle>{"Elimina " + title}</DialogTitle>
       <DialogContent>
         <DialogContentText id="delete-dialog-slide-description">
-          You are about to delete "{title}". Are you sure you want to continue?
+          Stai per eliminare "{title}". Sei sicuro di voler procedere?
         </DialogContentText>
       </DialogContent>
       <Box pr={2} pb={2}>
         <DialogActions>
           <Button color="inherit" onClick={() => setOpen(false)}>
             <Box mx={2}>
-              cancel
+              Cancella
             </Box>
           </Button>
           <LoadingButton
@@ -69,7 +69,7 @@ const DeleteDialog: React.FC<DeleteDialogProps> = (
             onClick={handleDelete}
           >
             <Box mx={2}>
-              delete
+              Elimina
             </Box>
           </LoadingButton>
         </DialogActions>

@@ -1,13 +1,13 @@
 import {GridOverlay} from "@mui/x-data-grid";
 import React from "react";
-import EmptyGridContent from "../NoContentIcon/EmptyGridContent";
+import NoContentIcon from "../NoContentIcon/NoContentIcon";
 import {Stack} from "@mui/material";
 
 function NoRowsOverlay() {
   return (
     <GridOverlay>
       <Stack>
-        <EmptyGridContent caption="No elements"/>
+        <NoContentIcon caption="No elements"/>
       </Stack>
     </GridOverlay>
   );

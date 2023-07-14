@@ -81,7 +81,7 @@ const AddDialog: FC<AddDialogProps> = (
       <Box pr={2} pb={2}>
         <DialogActions>
           <Button color="inherit" onClick={handleClose}>
-            <Box mx={2}>cancel</Box>
+            <Box mx={2}>Cancella</Box>
           </Button>
           <Button
             color="primary"
@@ -89,7 +89,7 @@ const AddDialog: FC<AddDialogProps> = (
             form={title}
           >
             <Box mx={2}>
-              {Boolean(submitButtonText) ? submitButtonText : 'Add'}
+              {Boolean(submitButtonText) ? submitButtonText : 'Aggiungi'}
             </Box>
           </Button>
         </DialogActions>

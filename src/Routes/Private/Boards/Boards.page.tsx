@@ -11,13 +11,14 @@ import {useConfirmation} from "../../../Components/Providers/ConfirmDialog/Confi
 import MainPage from "../../../Components/MainPage/MainPage";
 import AddCard from "../../../Components/AddCard/AddCard";
 import BoardCard from "../../../Components/BoardCard/BoardCard";
-import {defaultBoards, getAllBoards} from "../../../services/boards.services";
+import {createBoard, defaultBoards, getAllBoards} from "../../../services/boards.services";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../../Components/Providers/Authorization/Authorization.provider";
 import {getReasonAlert} from "../../../utils/requestAlertHandler";
 import AddDialog from "../../../Components/AddDialog/AddDialog";
 import TextField from "@mui/material/TextField";
 import DialogFormLabel from "../../../Components/DialogFormLabel/DialoFormLabel";
+import DashboardCustomizeOutlinedIcon from "@mui/icons-material/DashboardCustomizeOutlined";
 
 export const BoardsPage = () => {
   const [boards, setBoards] = useState(defaultBoards);
@@ -25,7 +26,6 @@ export const BoardsPage = () => {
   const {setAlertEvent} = useAlert();
   const navigate = useNavigate();
   const [openAddDialog, setOpenAddDialog] = useState(false);
-
   const [updatedTime, setUpdatedTime] = useState(getUpdatedTime());
 
   useEffect(() => {
@@ -51,12 +51,26 @@ export const BoardsPage = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
+    const newBoard = {
+      name: data.get('name') as string,
+      description: data.get('description') as string
+    }
+
+    await createBoard(newBoard)
+        .then(() => {
+          setOpenAddDialog(false);
+          handleRefresh();
+        })
+        .catch((err) => {
+          setAlertEvent(getReasonAlert(err));
+        })
   };
 
   return (
       <MainPage
           title="Le tue board"
           onRefresh={handleRefresh}
+          icon={<DashboardCustomizeOutlinedIcon/>}
           updatedTime={updatedTime}
       >
         <Grid container spacing={2}>
@@ -105,7 +119,7 @@ export const BoardsPage = () => {
                 <TextField
                     id="name"
                     name="name"
-                    label="Name"
+                    label="Nome"
                     autoFocus
                     autoComplete="name"
                     fullWidth

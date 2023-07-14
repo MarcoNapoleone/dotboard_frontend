@@ -34,9 +34,8 @@ const Routes = () => {
                   <Route path="boards" element={<BoardsPage/>}/>
                   <Route path="boards/:boardId" element={<BoardPage/>}/>
                   <Route path="boards/:boardId/edit" element={<BoardPage/>}/>
-                  <Route path="apis" element={<ApisPage/>}>
-                    <Route path=":apiId" element={<BoardsPage/>}/>
-                  </Route>
+                  <Route path="apis" element={<ApisPage/>}/>
+                  <Route path="apis/:apiId" element={<ApisPage/>}/>
                   <Route path="*" element={<NoMatch/>}/>
                 </Route>
                 <Route path="*" element={<NoMatch/>}/>

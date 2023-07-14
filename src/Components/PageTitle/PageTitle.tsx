@@ -33,7 +33,7 @@ const PageTitle: FC<PageTitleProps> = ({title, icon, loading, children}) => {
             sx={{
               height: isMobile ? theme => theme.spacing(6) : theme => theme.spacing(8),
               width: isMobile ? theme => theme.spacing(6) : theme => theme.spacing(8),
-              backgroundColor: alpha(theme.palette.primary.main, 0.20),
+              backgroundColor: alpha(theme.palette.primary.main, 0.1),
               color: theme.palette.primary.main,
             }}
             variant="rounded"

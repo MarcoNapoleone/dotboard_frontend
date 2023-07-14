@@ -29,7 +29,7 @@ export const ThemeModeContext = React.createContext({
   setMode: (mode: string) => {
   },
   palette: {
-    primaryLight: indigo["900"],
+    primaryLight: "#c2e7ff",
     secondaryLight: red["800"],
     primaryDark: teal["200"],
     secondaryDark: deepOrange["300"],
@@ -49,8 +49,8 @@ const Theme: React.FC<ThemeProps> = ({children}) => {
   const palletType = mode === 'dark' ? 'dark' : 'light';
   const primaryColor = mode === 'light' ? palette?.primaryLight : palette?.primaryDark;
   const secondaryColor = mode === 'light' ? palette?.secondaryLight : palette?.secondaryDark;
-  const backgroundPaper = mode === 'light' ? lighten(defaultPalette?.primaryLight, 0.93) : darken(defaultPalette?.primaryDark, 0.82);
-  const backgroundDefault = mode === 'light' ? lighten(defaultPalette?.primaryLight, 0.87) : darken(defaultPalette?.primaryDark, 0.95);
+  const backgroundPaper = mode === 'light' ? '#fff' : darken(defaultPalette?.primaryDark, 0.82);
+  const backgroundDefault = mode === 'light' ? '#f4f6fd' : darken(defaultPalette?.primaryDark, 0.95);
 
   let theme = createTheme({
     typography: {

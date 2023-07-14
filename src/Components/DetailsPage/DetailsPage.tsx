@@ -66,6 +66,7 @@ interface DetailsPageProps {
   chips?: React.ReactNode,
   noEditElement?: React.ReactNode,
   allowModify?: modifyConfig,
+  cardChildren?: boolean,
   breadcrumbs?: JSX.Element[],
   baseChildrenLoadingRows?: number,
   baseChildrenLoadingColumns?: number,
@@ -82,6 +83,7 @@ const DetailsPage: FC<DetailsPageProps> = (
       onRefresh,
       onSubmit,
       allowModify,
+      cardChildren = true,
       noEditElement,
       onDelete,
       breadcrumbs,
@@ -157,7 +159,7 @@ const DetailsPage: FC<DetailsPageProps> = (
               {!isMobile
                   ? !editMode && <Grow in key={2}>
                 <Stack direction="row" spacing={1}>
-                  {allowModify.edit && <Tooltip title="Edit" arrow TransitionComponent={Zoom}>
+                  {allowModify.edit && <Tooltip title="Modifica" arrow TransitionComponent={Zoom}>
                     <IconButton
                       id="3"
                       color="primary"
@@ -165,7 +167,7 @@ const DetailsPage: FC<DetailsPageProps> = (
                       onClick={handleEditMode}
                     />
                   </Tooltip>}
-                  {allowModify.delete && <Tooltip title="Delete" arrow TransitionComponent={Zoom}>
+                  {allowModify.delete && <Tooltip title="Elimina" arrow TransitionComponent={Zoom}>
                     <IconButton
                       id="4"
                       onClick={() => setOpenDeleteDialog(true)}
@@ -215,43 +217,78 @@ const DetailsPage: FC<DetailsPageProps> = (
                 </Card>
                 : editMode
                     ? <Fade in key={1}>
-                      <Card variant="outlined">
-                        <CardContent>
-                          <Box py={2}>
-                            {editChildren}
-                          </Box>
-                          <DialogActions>
-                            <Button color="inherit"
-                                    onClick={() => setEditMode(false)}
-                            >
-                              <Box mx={2}>annulla</Box>
-                            </Button>
-                            <Button
-                                color="primary"
-                                id="1"
-                                form="editForm"
-                                type="submit"
-                                sx={{
-                                  backgroundColor: alpha(theme.palette.primary.main, 0.2),
-                                  "&:hover": {
-                                    backgroundColor: alpha(theme.palette.primary.main, 0.25),
-                                  },
-                                }}>
-                              <Box mx={2}>
-                                salva
+                      <div>
+                        {cardChildren ? <Card variant="outlined">
+                              <CardContent>
+                                <Box py={1}>
+                                  {editChildren}
+                                </Box>
+                                <DialogActions>
+                                  <Button color="inherit"
+                                          onClick={() => setEditMode(false)}
+                                  >
+                                    <Box mx={2}>annulla</Box>
+                                  </Button>
+                                  <Button
+                                      color="primary"
+                                      id="1"
+                                      form="editForm"
+                                      type="submit"
+                                      sx={{
+                                        backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                                        "&:hover": {
+                                          backgroundColor: alpha(theme.palette.primary.main, 0.25),
+                                        },
+                                      }}>
+                                    <Box mx={2}>
+                                      salva
+                                    </Box>
+                                  </Button>
+                                </DialogActions>
+                              </CardContent>
+                            </Card>
+                            : <div>
+                              <Box py={1}>
+                                {editChildren}
                               </Box>
-                            </Button>
-                          </DialogActions>
-                        </CardContent>
-                      </Card>
+                              <DialogActions>
+                                <Button color="inherit"
+                                        onClick={() => setEditMode(false)}
+                                >
+                                  <Box mx={2}>annulla</Box>
+                                </Button>
+                                <Button
+                                    color="primary"
+                                    id="1"
+                                    form="editForm"
+                                    type="submit"
+                                    sx={{
+                                      backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                                      "&:hover": {
+                                        backgroundColor: alpha(theme.palette.primary.main, 0.25),
+                                      },
+                                    }}>
+                                  <Box mx={2}>
+                                    salva
+                                  </Box>
+                                </Button>
+                              </DialogActions>
+                            </div>
+                        }
+                        <Box pt={1}>
+                          {children}
+                        </Box>
+                      </div>
                     </Fade>
                     : <Fade in={Boolean(baseChildren)} key={2}>
                       <div>
-                        <Card variant="outlined">
-                          <CardContent>
-                            {baseChildren}
-                          </CardContent>
-                        </Card>
+                        {cardChildren ? <Card variant="outlined">
+                              <CardContent>
+                                {baseChildren}
+                              </CardContent>
+                            </Card>
+                            : <div>{baseChildren}</div>
+                        }
                         <Box pt={2}>
                           {children}
                         </Box>

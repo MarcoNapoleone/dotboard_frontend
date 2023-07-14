@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Grid, IconButton} from "@mui/material";
+import {alpha, Chip, Grid, IconButton, Typography} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useAlert} from "../../../Components/Providers/Alert/Alert.provider";
 import {useNavigate} from "react-router-dom";
@@ -13,8 +13,13 @@ import DatagridTable from "../../../Components/DatagridComponents/DatagridTable"
 import AddDialog from "../../../Components/AddDialog/AddDialog";
 import DialogFormLabel from "../../../Components/DialogFormLabel/DialoFormLabel";
 import TextField from "@mui/material/TextField";
+import {API, getAllAPIs} from "../../../services/apis.services";
+import {useTheme} from "@mui/material/styles";
+import Link from "@mui/material/Link";
+import DataObjectOutlinedIcon from "@mui/icons-material/DataObjectOutlined";
 
 export const ApisPage = () => {
+  const theme = useTheme();
   const [apis, setApis] = useState(defaultBoards);
   const [loading, setLoading] = useState(true);
   const {confirm} = useConfirmation();
@@ -29,7 +34,7 @@ export const ApisPage = () => {
   }, []);
 
   const fetchData = async () => {
-    const res = await getAllBoards()
+    const res = await getAllAPIs()
     setApis(res);
   }
 
@@ -84,10 +89,12 @@ export const ApisPage = () => {
     event.preventDefault();
   };
 
-  const rows = apis.map((api) => {
+  const rows = apis.map((api: API) => {
     return {
       id: api.id,
       name: api.name,
+      url: api.url,
+      method: api.method,
     }
   })
   const columns = [
@@ -101,87 +108,46 @@ export const ApisPage = () => {
     },
     {
       field: 'name',
-      headerName: 'Name',
+      headerName: 'Nome',
       minWidth: 150,
       editable: false,
+    },
+    {
+      field: 'url',
+      headerName: 'Url',
+      minWidth: 150,
+      editable: false,
+      renderCell: (e: any) => {
+        return (
+        <Link
+            href={e.row.url}
+            underline="always"
+        color="inherit"
+        >
+          {e.row.url}
+        </Link>
+        )
+      },
       flex: 1,
     },
     {
-      field: 'surname',
-      headerName: 'Surname',
+      field: 'method',
+      headerName: 'Method',
       minWidth: 150,
       editable: false,
-      flex: 1,
-    },
-    {
-      field: 'fiscalCode',
-      headerName: 'Fiscal Code',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
-    },
-    {
-      field: 'phone',
-      headerName: 'Phone',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
-    },
-    {
-      field: 'email',
-      headerName: 'Email',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
-    },
-    {
-      field: 'birthDate',
-      headerName: 'Birth Date',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
-    },
-    {
-      field: 'birthPlace',
-      headerName: 'Birth Place',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
-    },
-    {
-      field: 'address',
-      headerName: 'Address',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
-    },
-    {
-      field: 'municipality',
-      headerName: 'Municipality',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
-    },
-    {
-      field: 'province',
-      headerName: 'Province',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
-    },
-    {
-      field: 'postalCode',
-      headerName: 'Postal Code',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
-    },
-    {
-      field: 'country',
-      headerName: 'Country',
-      minWidth: 150,
-      editable: false,
-      flex: 1,
+      renderCell: (e: any) => {
+        return (
+            <Chip
+                size="small"
+                sx={{
+                  color: theme.palette.primary.main,
+                  backgroundColor: alpha(theme.palette.primary.main, 0.2),
+                }}
+                label={e.row.method}
+                color="primary"
+            />
+        )
+      }
     },
     {
       field: 'more',
@@ -195,9 +161,9 @@ export const ApisPage = () => {
       headerAlign: 'center',
     },
     {
-      field: 'edit',
-      headerName: 'Edit',
-      description: 'Edit, Delete',
+      field: 'delete',
+      headerName: 'Elimina',
+      description: 'Delete',
       align: 'center',
       renderCell: RenderDeleteButton,
       width: 110,
@@ -211,6 +177,7 @@ export const ApisPage = () => {
       <MainPage
           title="APIs"
           onRefresh={handleRefresh}
+          icon={<DataObjectOutlinedIcon/>}
           updatedTime={updatedTime}
       >
         <DatagridTable
@@ -233,7 +200,7 @@ export const ApisPage = () => {
                 <TextField
                     id="name"
                     name="name"
-                    label="Name"
+                    label="Nome"
                     autoFocus
                     autoComplete="name"
                     fullWidth
