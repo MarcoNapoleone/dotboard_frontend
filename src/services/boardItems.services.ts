@@ -25,17 +25,17 @@ export const defaultBoardItem: BoardItem = {};
 export async function getBoardItem(id: Id): Promise<BoardItem> {
   let data = {};
   await servicePath
-      .get(`/BoardItems/${id}`, {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 200) {
-          return new Error(res.data["message"])
-        }
-        data = res.data
-      })
+    .get(`/BoardItems/${id}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        return new Error(res.data["message"])
+      }
+      data = res.data
+    })
   return data;
 }
 
@@ -43,33 +43,36 @@ export async function getBoardItem(id: Id): Promise<BoardItem> {
 export async function updateBoardItem(id: Id, BoardItem: BoardItem): Promise<AxiosResponse> {
   let response = {} as AxiosResponse;
   await servicePath
-      .put(`/boardItems/${id}`, BoardItem, {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 200) {
-          return new Error(res.data["message"])
-        }
-        response = res
-      })
+    .put(`/boardItems/${id}`, BoardItem, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        return new Error(res.data["message"])
+      }
+      response = res
+    })
   return response;
 }
 
 export async function deleteBoardItem(id: Id): Promise<AxiosResponse> {
   let response = {} as AxiosResponse;
   await servicePath
-      .delete(`/BoardItems/${id}`, {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 200) {
-          return new Error(res.data["message"])
-        }
-        response = res
-      })
+    .delete(`/boardItems/${id}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        return new Error(res.data["message"])
+      }
+      response = res
+    })
+    .catch(err => {
+      return new Error(err.data["message"])
+    })
   return response;
 }

@@ -13,6 +13,7 @@ export class Board {
   version?: number;
   updatedAt?: Date;
   publicLink?: string;
+  public ?: boolean;
   description?: string;
   boardItems?: BoardItem[];
 }

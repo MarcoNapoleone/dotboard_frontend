@@ -82,7 +82,7 @@ export const BoardsPage = () => {
                   </Grid>
                   {[...Array(5)].map((el, index) => (
                           <Grow in key={index.toString()} style={{transitionDelay: `50ms`}}>
-                            <Grid  item xs={12} md={4}>
+                            <Grid item xs={12} md={4}>
                               <BoardCard isLoading/>
                             </Grid>
                           </Grow>

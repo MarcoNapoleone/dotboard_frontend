@@ -42,37 +42,13 @@ const BaseBoardItem: React.FC<BaseItemProps> = (
   const theme = useTheme();
 
   return (
-      <div
-          draggable={true}
-          unselectable="on"
-          onDragStart={e => e.dataTransfer.setData("text/plain", "")}
-          style={{
-            opacity: 1, // Imposta l'opacità predefinita
-            cursor: "move", // Imposta il cursore predefinito
-          }}
-          className={editMode ? 'element wobble' : ''}
-      >
+      <div>
         {isLoading
             ? <Skeleton variant="rectangular" width="100%" animation="wave" sx={{borderRadius: '16px'}}>
-              <CardActionArea sx={{
-                height: '100%',
-              }} onClick={onClick}>
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    loading
-                  </Typography>
-                  <Chip
-                      size="small"
-                      label="loading"
-                  />
-                </CardContent>
-              </CardActionArea>
+
             </Skeleton>
             : <Card variant="outlined">
-              <CardActionArea sx={{
-                height: '100%',
-                minHeight: '100px',
-              }} onClick={onClick} disableRipple={!Boolean(onClick)}>
+              <CardActionArea onClick={onClick} disableRipple={!Boolean(onClick)}>
                 {usePadding
                     ? <CardContent>
                       {children}

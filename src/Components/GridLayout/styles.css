@@ -128,8 +128,8 @@
   transform: rotate(90deg);
 }
 .react-grid-item > .react-resizable-handle.react-resizable-handle-se {
-  bottom: 0;
-  right: 0;
+  bottom: 8px;
+  right: 8px;
   cursor: se-resize;
 }
 .react-grid-item > .react-resizable-handle.react-resizable-handle-nw {
