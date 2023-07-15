@@ -5,7 +5,7 @@ import {
   Box,
   Card,
   CardActionArea,
-  CardContent,
+  CardContent, CardMedia,
   Chip,
   Container,
   Grid, IconButton,
@@ -21,18 +21,18 @@ import BaseBoardItem from "./Base.boardItem";
 import {EditOutlined} from "@mui/icons-material";
 
 type CompanyCardProps = {
-  title: string,
-  subtitle: string,
+  src?: string,
+  title?: string,
   isLoading?: boolean,
   editMode?: boolean,
   onEdit?: () => void,
   onClick?: () => void
 }
 
-const TextBoardItem: React.FC<CompanyCardProps> = (
+const IframeBoardItem: React.FC<CompanyCardProps> = (
   {
+    src,
     title,
-    subtitle,
     isLoading,
     editMode,
     onEdit,
@@ -61,17 +61,16 @@ const TextBoardItem: React.FC<CompanyCardProps> = (
         disabled={!Boolean(onClick) || editMode}
         disableRipple={!Boolean(onClick) || editMode}
       >
-        <CardContent>
-          <Typography variant="h5" gutterBottom component="div">
-            {title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {subtitle}
-          </Typography>
-        </CardContent>
+        <iframe
+          height={'100%'}
+          width={'100%'}
+          style={{border: 'none'}}
+          src={src} title={title}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen/>
       </CardActionArea>
     </Card>
   )
 }
 
-export default TextBoardItem;
+export default IframeBoardItem;

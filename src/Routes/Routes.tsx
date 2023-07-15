@@ -38,6 +38,7 @@ const Routes = () => {
                   <Route path="apis/:apiId" element={<ApisPage/>}/>
                   <Route path="*" element={<NoMatch/>}/>
                 </Route>
+                <Route path="/app/guest/boards/:boardId/" element={<NoMatch/>}/>
                 <Route path="*" element={<NoMatch/>}/>
               </Router>
             </BrowserRouter>

@@ -8,7 +8,7 @@ import {
   CardContent,
   Chip,
   Container,
-  Grid,
+  Grid, IconButton,
   Skeleton,
   Typography,
 } from "@mui/material";
@@ -18,16 +18,25 @@ import {Board} from "../../services/boards.services";
 import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import BaseBoardItem from "./Base.boardItem";
+import {EditOutlined} from "@mui/icons-material";
 
 type CompanyCardProps = {
-  city: string;
-  isLoading?: boolean;
+  city: string,
+  isLoading?: boolean,
+  editMode?: boolean,
+  onEdit?: () => void,
+  onClick?: () => void
 };
 
-const WeatherBoardItem: React.FC<CompanyCardProps> = ({
-                                                        city,
-                                                        isLoading,
-                                                      }) => {
+const WeatherBoardItem: React.FC<CompanyCardProps> = (
+  {
+    city,
+    isLoading,
+    editMode,
+    onEdit,
+    onClick
+  }
+) => {
   const theme = useTheme();
   const [weatherData, setWeatherData] = useState<any>(null);
 
@@ -49,32 +58,53 @@ const WeatherBoardItem: React.FC<CompanyCardProps> = ({
   }, [city, isLoading]);
 
   return (
-      <BaseBoardItem
-          isLoading={isLoading}
-          children={
-              weatherData && (
-                  <>
-                    <Typography gutterBottom variant="body2" component="div" color="text.secondary">
-                      {weatherData.location.name}
-                    </Typography>
-                    <Grid container justifyContent="space-between" alignItems="center">
-                      <Grid item>
-                        <Typography variant="h4" component="div">
-                          {weatherData.current.temp_c}°C
-                        </Typography>
-                      </Grid>
-                      <Grid item>
-                        <img height="48" src={weatherData.current.condition.icon} alt=""/>
-                      </Grid>
-                    </Grid>
-                    <Chip
-                        size="small"
-                        label={weatherData.current.condition.text}
-                    />
-                  </>
-              )
-          }
-      />
+    <Card
+      variant="outlined"
+      sx={{height: '100%'}}
+    >
+      {editMode
+        && <Box sx={{position: 'absolute', top: '8px', right: '8px', zIndex: 1}}>
+          <IconButton size="small" onClick={onEdit}>
+            <EditOutlined/>
+          </IconButton>
+        </Box>}
+      <CardActionArea
+        sx={{
+          height: '100%',
+        }}
+        onClick={onClick}
+        disabled={!Boolean(onClick) || editMode}
+        disableRipple={!Boolean(onClick) || editMode}
+      >
+        <CardContent
+          sx={{
+            height: '100%',
+          }}
+        >
+          {weatherData && (
+            <>
+              <Typography gutterBottom variant="body2" component="div" color="text.secondary">
+                {weatherData.location.name}
+              </Typography>
+              <Grid container justifyContent="space-between" alignItems="center">
+                <Grid item>
+                  <Typography variant="h4" component="div">
+                    {weatherData.current.temp_c}°C
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <img height="48" src={weatherData.current.condition.icon} alt=""/>
+                </Grid>
+              </Grid>
+              <Chip
+                size="small"
+                label={weatherData.current.condition.text}
+              />
+            </>
+          )}
+        </CardContent>
+      </CardActionArea>
+    </Card>
   );
 };
 

@@ -12,7 +12,7 @@ export const layoutFormatter = (boardItems: BoardItem []) : Layout[] => {
       y: bi?.y,
       i: bi.id,
       moved: false,
-      static: false
+      static: false,
     })
   })
 

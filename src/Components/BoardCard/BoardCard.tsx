@@ -24,7 +24,7 @@ const BoardCard: React.FC<CompanyCardProps> = (
   const theme = useTheme();
 
   const getLabel = (board: Board) => {
-    if (board.publicLink === "" || board.publicLink === null) {
+    if (!Boolean(board.public)) {
       return "Privata"
     } else return "Condivisa";
   }
@@ -89,11 +89,11 @@ const BoardCard: React.FC<CompanyCardProps> = (
                       <Chip
                           size="small"
                           sx={{
-                            color: theme.palette.secondary.main,
-                            backgroundColor: alpha(theme.palette.secondary.main, 0.2),
+                            color: !board?.public ? theme.palette.secondary.main : theme.palette.primary.main,
+                            backgroundColor: alpha(!board?.public ? theme.palette.secondary.main : theme.palette.primary.main, 0.1)
                           }}
-                          icon={getLabel(board) === "Privata" ? <LockOutlinedIcon/> : <PeopleAltOutlinedIcon/>}
-                          color={'secondary'}
+                          icon={!board?.public ? <LockOutlinedIcon/> : <PeopleAltOutlinedIcon/>}
+                          color={!board?.public ? "secondary" : "primary"}
                           label={getLabel(board)}
                       />
                 </CardContent>

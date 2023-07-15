@@ -4,19 +4,21 @@ import {WidthProvider, Responsive, Layout} from "react-grid-layout";
 import {Card, CardContent} from "@mui/material";
 import "./styles.css";
 import {useTheme} from "@mui/material/styles";
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const ResponsiveReactGridLayout = WidthProvider(Responsive);
 
 interface MinMaxLayoutProps {
   isDraggable?: boolean;
   isResizable?: boolean;
-  layout?: Layout[]; // Aggiunto il campo layout
+  layout?: JSX.Element[]; // Aggiunto il campo layout
   rowHeight?: number;
   editMode?: boolean;
-  onLayoutChange?: (layout: Layout[]) => void;
+  onLayoutChange?: (layout: JSX.Element[]) => void;
   onDroppedItem?: (item: any) => void;
   cols?: { [breakpoint: string]: number };
 }
+
 
 const GridLayout: React.FC<MinMaxLayoutProps> = (
     {
@@ -56,9 +58,9 @@ const GridLayout: React.FC<MinMaxLayoutProps> = (
   return (
       <ResponsiveReactGridLayout
           onLayoutChange={handleLayoutChange}
-          isDraggable={isDraggable}
+          isDraggable={isDraggable }
           isResizable={isResizable}
-          isDroppable={editMode}
+          isDroppable={editMode && false}
           onDrop={(elemParams) => {
             onDroppedItem(elemParams.pop());
           }}
@@ -68,7 +70,7 @@ const GridLayout: React.FC<MinMaxLayoutProps> = (
           rowHeight={rowHeight}
           cols={cols}
       >
-        {generateDOM()}
+        {layout}
       </ResponsiveReactGridLayout>
   );
 };
