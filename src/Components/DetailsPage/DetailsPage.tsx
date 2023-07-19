@@ -58,7 +58,6 @@ interface DetailsPageProps {
   title: string,
   updatedTime?: string,
   loading?: boolean,
-  boardLayoutLoading?: boolean,
   onRefresh?: () => void,
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void,
   onDelete?: () => void,
@@ -83,7 +82,6 @@ const DetailsPage: FC<DetailsPageProps> = (
     title,
     updatedTime,
     loading,
-    boardLayoutLoading,
     onRefresh,
     onSubmit,
     allowModify,
@@ -221,9 +219,7 @@ const DetailsPage: FC<DetailsPageProps> = (
         </Grid>
         <Grid item mt={3}>
           {loading
-            ? boardLayoutLoading
-              ? <GridLayout/>
-              : <Card variant="outlined">
+            ? <Card variant="outlined">
                 <DetailsLoading rows={baseChildrenLoadingRows} columns={baseChildrenLoadingColumns}/>
               </Card>
             : editMode

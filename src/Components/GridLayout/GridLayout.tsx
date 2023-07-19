@@ -32,7 +32,6 @@ const GridLayout: React.FC<MinMaxLayoutProps> = (
     },
     onDroppedItem = () => {
     },
-    loading,
     cols = {lg: 12, md: 10, sm: 8, xs: 6, xxs: 2},
   }
 ) => {
@@ -42,16 +41,6 @@ const GridLayout: React.FC<MinMaxLayoutProps> = (
   useEffect(() => {
   }, []);
 
-
-  const getLoadingLayout = (): JSX.Element[] => {
-    return _.map(layout, (l) => {
-      return (
-        <Card variant="outlined" key={l.i} data-grid={l}>
-          <CardContent>{l.i}</CardContent>
-        </Card>
-      );
-    });
-  };
 
   const handleLayoutChange = (layout: Layout[]): void => {
     onLayoutChange(layout);
@@ -72,11 +61,7 @@ const GridLayout: React.FC<MinMaxLayoutProps> = (
       rowHeight={rowHeight}
       cols={cols}
     >
-      {loading
-        ? getLoadingLayout()
-        : layout
-
-      }
+      {layout}
     </ResponsiveReactGridLayout>
   );
 };

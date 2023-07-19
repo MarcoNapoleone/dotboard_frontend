@@ -330,7 +330,7 @@ export const ApisPage = () => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            <Box component="form" id="editItemDilog" noValidate onSubmit={()=>{}}>
+            <Box component="form" id="editItemDilog" noValidate onSubmit={handleSubmitEdit}>
               <Grid container direction="column" spacing={2}>
                 <Grid item xs={12}>
                   <TextField
@@ -338,7 +338,7 @@ export const ApisPage = () => {
                     name="name"
                     label="Nome"
                     autoFocus
-                    defaultValue={selectedAPI?.name }
+                    defaultValue={selectedAPI?.name}
                     autoComplete="name"
                     fullWidth
                     required
@@ -350,6 +350,7 @@ export const ApisPage = () => {
                     <Select
                       labelId="labelSelectMethod"
                       id="mehod"
+                      defaultValue={selectedAPI?.method}
                       value={selectedMethod}
                       label="Method"
                       onChange={(e) => setSelectedMethod(e.target.value as Method)}
@@ -365,6 +366,7 @@ export const ApisPage = () => {
                   <TextField
                     id="url"
                     name="url"
+                    defaultValue={selectedAPI?.url}
                     label="URL"
                     autoComplete="url"
                     fullWidth

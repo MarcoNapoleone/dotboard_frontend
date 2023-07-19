@@ -83,7 +83,7 @@ const WeatherBoardItem: React.FC<CompanyCardProps> = (
         >
           {weatherData && (
             <>
-              <Typography gutterBottom variant="body2" component="div" color="text.secondary">
+              <Typography  variant="body2" component="div" color="text.secondary">
                 {weatherData.location.name}
               </Typography>
               <Grid container justifyContent="space-between" alignItems="center">
