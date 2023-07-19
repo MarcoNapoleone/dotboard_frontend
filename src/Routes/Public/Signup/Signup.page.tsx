@@ -44,7 +44,6 @@ export default function SignupPage() {
         status: true,
         message: "Le password non coincidono"
       })
-      console.log(data.get('password') as String, data.get('repeatPassword') as String)
       return
     }
 

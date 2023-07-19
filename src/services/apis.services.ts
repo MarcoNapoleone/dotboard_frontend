@@ -68,10 +68,27 @@ export async function createAPI(api: API): Promise<API> {
   return data;
 }
 
-export async function updateAPI(api: API): Promise<API> {
+export async function updateAPI(id: Id, api: API): Promise<API> {
   let data = {};
   await servicePath
-      .put(`/apis/${api.id}`, api, {
+      .put(`/apis/${id}`, api, {
+        headers: {
+          Authorization: `Bearer ${getCookie('token')}`
+        }
+      })
+      .then(res => {
+        if (res.status !== 200) {
+          return new Error(res.data["message"])
+        }
+        data = res.data
+      })
+  return data;
+}
+
+export async function deleteAPI(id: Id): Promise<API> {
+  let data = {};
+  await servicePath
+      .delete(`/apis/${id}`, {
         headers: {
           Authorization: `Bearer ${getCookie('token')}`
         }

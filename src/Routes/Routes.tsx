@@ -8,6 +8,7 @@ import {BoardPage} from "./Private/Boards/Board.page";
 import PageFrame from "../Components/PageFrame/PageFrame";
 import {AuthProvider, RequireAuth} from "../Components/Providers/Authorization/Authorization.provider";
 import {ApisPage} from "./Private/Apis/Apis.page";
+import {PublicBoardPage} from "./Public/Boards/PublicBoardPage";
 
 
 const Login = lazy(() => import("./Public/Login/Login.page"));
@@ -38,7 +39,7 @@ const Routes = () => {
                   <Route path="apis/:apiId" element={<ApisPage/>}/>
                   <Route path="*" element={<NoMatch/>}/>
                 </Route>
-                <Route path="/app/guest/boards/:boardId/" element={<NoMatch/>}/>
+                <Route path="/app/boards/:boardId/guest" element={<PublicBoardPage/>}/>
                 <Route path="*" element={<NoMatch/>}/>
               </Router>
             </BrowserRouter>

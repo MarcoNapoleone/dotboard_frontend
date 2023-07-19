@@ -36,6 +36,7 @@ import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import List from "@mui/material/List";
 import ListItemText from "@mui/material/ListItemText";
 import DeleteDialog from "../DeleteDialog/DeleteDialog";
+import GridLayout from "../GridLayout/GridLayout";
 
 interface modifyConfig {
   edit: boolean;
@@ -57,6 +58,7 @@ interface DetailsPageProps {
   title: string,
   updatedTime?: string,
   loading?: boolean,
+  boardLayoutLoading?: boolean,
   onRefresh?: () => void,
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void,
   onDelete?: () => void,
@@ -81,6 +83,7 @@ const DetailsPage: FC<DetailsPageProps> = (
     title,
     updatedTime,
     loading,
+    boardLayoutLoading,
     onRefresh,
     onSubmit,
     allowModify,
@@ -218,9 +221,11 @@ const DetailsPage: FC<DetailsPageProps> = (
         </Grid>
         <Grid item mt={3}>
           {loading
-            ? <Card variant="outlined">
-              <DetailsLoading rows={baseChildrenLoadingRows} columns={baseChildrenLoadingColumns}/>
-            </Card>
+            ? boardLayoutLoading
+              ? <GridLayout/>
+              : <Card variant="outlined">
+                <DetailsLoading rows={baseChildrenLoadingRows} columns={baseChildrenLoadingColumns}/>
+              </Card>
             : editMode
               ? <Fade in key={1}>
                 <div>

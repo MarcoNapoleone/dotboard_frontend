@@ -1,5 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {alpha, Chip, Grid, IconButton, Typography} from "@mui/material";
+import {
+  alpha, Box,
+  Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Fade,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  LinearProgress,
+  Select,
+  Typography, useMediaQuery
+} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/DeleteOutlined";
 import {useAlert} from "../../../Components/Providers/Alert/Alert.provider";
 import {useNavigate} from "react-router-dom";
@@ -13,21 +24,36 @@ import DatagridTable from "../../../Components/DatagridComponents/DatagridTable"
 import AddDialog from "../../../Components/AddDialog/AddDialog";
 import DialogFormLabel from "../../../Components/DialogFormLabel/DialoFormLabel";
 import TextField from "@mui/material/TextField";
-import {API, getAllAPIs} from "../../../services/apis.services";
+import {
+  API,
+  createAPI,
+  defaultAPI,
+  defaultAPIs,
+  deleteAPI,
+  getAllAPIs,
+  updateAPI
+} from "../../../services/apis.services";
 import {useTheme} from "@mui/material/styles";
 import Link from "@mui/material/Link";
 import DataObjectOutlinedIcon from "@mui/icons-material/DataObjectOutlined";
-
+import {Method} from "../../../utils/methods";
+import MenuItem from "@mui/material/MenuItem";
+import EditIcon from '@mui/icons-material/Edit';
+import {LoadingButton} from "@mui/lab";
+import Button from "@mui/material/Button";
 export const ApisPage = () => {
   const theme = useTheme();
-  const [apis, setApis] = useState(defaultBoards);
+  const [apis, setApis] = useState(defaultAPIs);
   const [loading, setLoading] = useState(true);
   const {confirm} = useConfirmation();
   const {setAlertEvent} = useAlert();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [updatedTime, setUpdatedTime] = useState(getUpdatedTime());
   const [openAddDialog, setOpenAddDialog] = useState(false);
-
+  const [selectedMethod, setSelectedMethod]: [Method, (selectedMethod: Method) => void] = useState();
+  const [selectedAPI, setSelectedAPI] = useState(defaultAPI);
 
   useEffect(() => {
     handleRefresh()
@@ -41,25 +67,32 @@ export const ApisPage = () => {
   const handleRefresh = async () => {
     setLoading(true)
     fetchData()
-        .then(() => setLoading(false))
-        .catch((err) => {
-          setAlertEvent(getReasonAlert(err));
-          setLoading(false)
-        })
+      .then(() => setLoading(false))
+      .catch((err) => {
+        setAlertEvent(getReasonAlert(err));
+        setLoading(false)
+      })
+  }
+
+  const handleCloseDialogs = () => {
+    setOpenAddDialog(false)
+    setOpenEditDialog(false)
+    setSelectedAPI(null)
+    setSelectedMethod(null)
   }
 
   const handleMoreInfoClick = (e: any) => {
-    navigate(`/app`);
+    setOpenEditDialog(true)
+    setSelectedAPI(apis.find((api) => api.id === e.row.id) as API)
   };
   const RenderMoreButton = (e: any) => {
 
     return (
-        <IconButton
-            onClick={() => handleMoreInfoClick(e)}
-
-        >
-          <OpenInNewOutlinedIcon/>
-        </IconButton>
+      <IconButton
+        onClick={() => handleMoreInfoClick(e)}
+      >
+        <EditIcon/>
+      </IconButton>
     );
   }
 
@@ -67,27 +100,68 @@ export const ApisPage = () => {
     const handleDeleteClick = async () => {
       setLoading(true);
       confirm(
-          {
-            title: "Delete HR",
-            onConfirm: async () => {
-
-            }
+        {
+          title: "Elimina API",
+          onConfirm: async () => {
+            await deleteAPI(e.row.id)
+              .then(() => {
+                handleRefresh();
+              })
+              .catch((err) => {
+                setAlertEvent(getReasonAlert(err));
+              })
           }
+        }
       )
     };
     return (
 
-        <IconButton
-            onClick={handleDeleteClick}
-        >
-          <DeleteIcon/>
-        </IconButton>
+      <IconButton
+        onClick={handleDeleteClick}
+      >
+        <DeleteIcon/>
+      </IconButton>
     );
   }
 
   const handleSubmitCreate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+    const newAPI = {
+      name: data.get('name') as string,
+      url: data.get('url') as string,
+      method: selectedMethod,
+    }
+    createAPI(newAPI)
+      .then(() => {
+        setOpenAddDialog(false);
+        handleRefresh();
+      })
+      .catch((err) => {
+        setAlertEvent(getReasonAlert(err));
+      })
   };
+
+  const handleSubmitEdit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const data = new FormData(event.currentTarget);
+    const newAPI: API = {
+      id: selectedAPI.id,
+      name: data.get('name') as string,
+      url: data.get('url') as string,
+      method: selectedMethod,
+    }
+    updateAPI(selectedAPI?.id, newAPI)
+      .then(() => {
+        setOpenEditDialog(false);
+        handleRefresh();
+      })
+      .catch((err) => {
+        setAlertEvent(getReasonAlert(err));
+      })
+  }
 
   const rows = apis.map((api: API) => {
     return {
@@ -119,13 +193,13 @@ export const ApisPage = () => {
       editable: false,
       renderCell: (e: any) => {
         return (
-        <Link
+          <Link
             href={e.row.url}
             underline="always"
-        color="inherit"
-        >
-          {e.row.url}
-        </Link>
+            color="inherit"
+          >
+            {e.row.url}
+          </Link>
         )
       },
       flex: 1,
@@ -137,21 +211,21 @@ export const ApisPage = () => {
       editable: false,
       renderCell: (e: any) => {
         return (
-            <Chip
-                size="small"
-                sx={{
-                  color: theme.palette.primary.main,
-                  backgroundColor: alpha(theme.palette.primary.main, 0.2),
-                }}
-                label={e.row.method}
-                color="primary"
-            />
+          <Chip
+            size="small"
+            sx={{
+              color: theme.palette.primary.main,
+              backgroundColor: alpha(theme.palette.primary.main, 0.2),
+            }}
+            label={e.row.method}
+            color="primary"
+          />
         )
       }
     },
     {
       field: 'more',
-      headerName: 'More',
+      headerName: 'Modifica',
       description: 'Details',
       align: 'center',
       renderCell: RenderMoreButton,
@@ -174,146 +248,150 @@ export const ApisPage = () => {
   ];
 
   return (
-      <MainPage
-          title="APIs"
-          onRefresh={handleRefresh}
-          icon={<DataObjectOutlinedIcon/>}
-          updatedTime={updatedTime}
+    <MainPage
+      title="APIs"
+      onRefresh={handleRefresh}
+      icon={<DataObjectOutlinedIcon/>}
+      updatedTime={updatedTime}
+    >
+      <DatagridTable
+        rows={rows}
+        allowAdd
+        onAdd={() => setOpenAddDialog(true)}
+        columns={columns}
+        loading={loading}
+        onRowDoubleClick={handleMoreInfoClick}
+      />
+      <AddDialog
+        title={"Aggiungi API"}
+        open={openAddDialog}
+        setOpen={setOpenAddDialog}
+        handleSubmit={handleSubmitCreate}
       >
-        <DatagridTable
-            rows={rows}
-            allowAdd
-            onAdd={() => setOpenAddDialog(true)}
-            columns={columns}
-            loading={loading}
-            onRowDoubleClick={handleMoreInfoClick}
-        />
-        <AddDialog
-            title={"Add HR"}
-            open={openAddDialog}
-            setOpen={setOpenAddDialog}
-            handleSubmit={handleSubmitCreate}
-        >
-          <Grid container direction="column" spacing={1}>
-            <Grid item container spacing={1}>
-              <Grid item xs={12} sm={6}>
-                <TextField
+        <Grid container direction="column" spacing={1}>
+          <Grid item xs={12}>
+            <TextField
+              id="name"
+              name="name"
+              label="Nome"
+              autoFocus
+              autoComplete="name"
+              fullWidth
+              required
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Method</InputLabel>
+              <Select
+                labelId="labelSelectMethod"
+                id="mehod"
+                value={selectedMethod}
+                label="Method"
+                onChange={(e) => setSelectedMethod(e.target.value as Method)}
+              >
+                <MenuItem value={'GET'}><Chip label="GET"/></MenuItem>
+                <MenuItem value={'POST'}><Chip label="POST"/></MenuItem>
+                <MenuItem value={'PUT'}><Chip label="PUT"/></MenuItem>
+                <MenuItem value={'DELETE'}><Chip label="DELETE"/></MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              id="url"
+              name="url"
+              label="URL"
+              autoComplete="url"
+              fullWidth
+              required
+            />
+          </Grid>
+        </Grid>
+      </AddDialog>
+      <Dialog
+        open={openEditDialog}
+        onClose={handleCloseDialogs}
+        fullWidth
+        disableEscapeKeyDown
+        PaperProps={{
+          sx: {
+            boxShadow: 0,
+            borderRadius: !isMobile && theme.spacing(4),
+          }
+        }}
+        scroll="paper"
+        TransitionComponent={Fade}
+        fullScreen={isMobile}
+      >
+        {loading && <LinearProgress color="primary"/>}
+        <DialogTitle>
+          <Typography variant="h6">Modifica elemento</Typography>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <Box component="form" id="editItemDilog" noValidate onSubmit={()=>{}}>
+              <Grid container direction="column" spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
                     id="name"
                     name="name"
                     label="Nome"
                     autoFocus
+                    defaultValue={selectedAPI?.name }
                     autoComplete="name"
                     fullWidth
                     required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                    id="surname"
-                    name="surname"
-                    label="Surname"
-                    autoComplete="surname"
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Method</InputLabel>
+                    <Select
+                      labelId="labelSelectMethod"
+                      id="mehod"
+                      value={selectedMethod}
+                      label="Method"
+                      onChange={(e) => setSelectedMethod(e.target.value as Method)}
+                    >
+                      <MenuItem value={'GET'}><Chip label="GET"/></MenuItem>
+                      <MenuItem value={'POST'}><Chip label="POST"/></MenuItem>
+                      <MenuItem value={'PUT'}><Chip label="PUT"/></MenuItem>
+                      <MenuItem value={'DELETE'}><Chip label="DELETE"/></MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    id="url"
+                    name="url"
+                    label="URL"
+                    autoComplete="url"
                     fullWidth
                     required
-                />
+                  />
+                </Grid>
               </Grid>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                  id="fiscalCode"
-                  name="fiscalCode"
-                  label="Fiscal Code"
-                  autoComplete="fiscalCode"
-                  fullWidth
-                  required
-              />
-            </Grid>
-            <Grid item>
-              <DialogFormLabel title="Info"/>
-            </Grid>
-            <Grid item container spacing={1}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                    id="birthPlace"
-                    name="birthPlace"
-                    label="Birth Place"
-                    autoComplete="birthPlace"
-                    fullWidth
-                    required
-                />
-              </Grid>
-            </Grid>
-            <Grid item container spacing={1}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                    id="address"
-                    name="address"
-                    label="Address"
-                    autoComplete="address"
-                    fullWidth
-                    required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                    id="municipality"
-                    name="municipality"
-                    label="Municipality"
-                    autoComplete="municipality"
-                    fullWidth
-                    required
-                />
-              </Grid>
-            </Grid>
-            <Grid item container spacing={1}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                    id="postalCode"
-                    name="postalCode"
-                    label="Postal code"
-                    autoComplete="postalCode"
-                    fullWidth
-                    required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                    id="province"
-                    name="province"
-                    label="Province"
-                    autoComplete="province"
-                    fullWidth
-                    required
-                />
-              </Grid>
-            </Grid>
-            <Grid item>
-              <DialogFormLabel title="Contacts"/>
-            </Grid>
-            <Grid item container spacing={1}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                    id="phone"
-                    name="phone"
-                    label="Phone"
-                    autoComplete="phone"
-                    fullWidth
-                    required
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                    id="email"
-                    name="email"
-                    label="Email"
-                    autoComplete="email"
-                    fullWidth
-                    required
-                />
-              </Grid>
-            </Grid>
-          </Grid>
-        </AddDialog>
-      </MainPage>
+            </Box>
+          </DialogContentText>
+        </DialogContent>
+        <Box pr={2} pb={2}>
+          <DialogActions>
+            <Button color="inherit" onClick={handleCloseDialogs}>
+              <Box mx={2}>Cancella</Box>
+            </Button>
+            <Button
+              color="primary"
+              type="submit"
+              form="editItemDilog"
+            >
+              <Box mx={2}>
+                Salva
+              </Box>
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
+    </MainPage>
   );
 }

@@ -23,7 +23,7 @@ function CustomGridToolbar(props: GridColumnMenuProps & { allowAdd?: boolean, on
               startIcon={<AddIcon/>}
               onClick={props.onAdd}
             >
-              Add
+              Aggiungi
             </Button>
           </Grid>
           : null

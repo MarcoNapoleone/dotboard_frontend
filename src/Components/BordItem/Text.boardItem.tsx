@@ -45,7 +45,19 @@ const TextBoardItem: React.FC<CompanyCardProps> = (
   return (
     <Card
       variant="outlined"
-      sx={{height: '100%'}}
+      sx={{
+        height: '100%',
+        overflow: 'hidden',
+        '&:hover': {
+          overflowY: 'auto',
+        },
+        scrollbarWidth: 'none', /* Firefox */
+        msOverflowStyle: 'none', /* IE and Edge */
+        '&::-webkit-scrollbar': {
+          width: 0,
+          height: 0,
+        },
+      }}
     >
       {editMode
         && <Box sx={{position: 'absolute', top: '8px', right: '8px', zIndex: 1}}>
@@ -53,23 +65,12 @@ const TextBoardItem: React.FC<CompanyCardProps> = (
             <EditOutlined/>
           </IconButton>
         </Box>}
-      <CardActionArea
-        sx={{
-          height: '100%',
-        }}
-        onClick={onClick}
-        disabled={!Boolean(onClick) || editMode}
-        disableRipple={!Boolean(onClick) || editMode}
-      >
         <CardContent>
           <Typography variant="h5" gutterBottom component="div">
             {title}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {subtitle}
-          </Typography>
+          <Typography variant="body2" color="text.secondary" dangerouslySetInnerHTML={{__html:subtitle.replace(/\n/g, "<br/>")}}></Typography>
         </CardContent>
-      </CardActionArea>
     </Card>
   )
 }

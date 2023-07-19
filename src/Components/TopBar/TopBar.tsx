@@ -39,6 +39,7 @@ import {useAlert} from "../Providers/Alert/Alert.provider";
 import {Id} from "../../entities/entities";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import jwt_decode from "jwt-decode";
+import {getUserByUsername} from "../../services/users.services";
 
 const SearchBar = () => {
   let textInput = useRef(null);
@@ -100,6 +101,10 @@ const TopBar: React.FC<TopBarProps> = ({onMenuClick, isOpen, title}) => {
 
   const fetchUser = async () => {
     const token = getCookie("token");
+
+    const decoded: any = jwt_decode(token)
+    const _user = await getUserByUsername(decoded?.sub)
+    setLoggedUser(_user)
   }
 
   const logout = async () => {
@@ -117,10 +122,6 @@ const TopBar: React.FC<TopBarProps> = ({onMenuClick, isOpen, title}) => {
         setLoading(false)
         setAlertEvent(getReasonAlert(err));
       })
-  };
-
-  const handleCloseCompanyMenu = () => {
-    setAnchorElCompany(null);
   };
 
   const handleCloseUserMenu = () => {
@@ -222,7 +223,7 @@ const TopBar: React.FC<TopBarProps> = ({onMenuClick, isOpen, title}) => {
                 <AccountCircleOutlined
                   fontSize="small"/>
               </ListItemIcon>
-              <ListItemText>{loggedUser?.name + ' ' + loggedUser?.surname}</ListItemText>
+              <ListItemText>{loggedUser?.username}</ListItemText>
             </MenuItem>
             <MenuItem>
               <ListItemIcon>

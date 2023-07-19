@@ -17,22 +17,24 @@ interface MinMaxLayoutProps {
   onLayoutChange?: (layout: JSX.Element[]) => void;
   onDroppedItem?: (item: any) => void;
   cols?: { [breakpoint: string]: number };
+  loading?: boolean;
 }
 
 
 const GridLayout: React.FC<MinMaxLayoutProps> = (
-    {
-      isDraggable,
-      isResizable,
-      layout,
-      rowHeight = 120,
-      editMode,
-      onLayoutChange = () => {
-      },
-      onDroppedItem = () => {
-      },
-      cols = {lg: 12, md: 10, sm: 6, xs: 4, xxs: 2},
-    }
+  {
+    isDraggable,
+    isResizable,
+    layout,
+    rowHeight = 120,
+    editMode,
+    onLayoutChange = () => {
+    },
+    onDroppedItem = () => {
+    },
+    loading,
+    cols = {lg: 12, md: 10, sm: 8, xs: 6, xxs: 2},
+  }
 ) => {
 
   const theme = useTheme();
@@ -41,12 +43,12 @@ const GridLayout: React.FC<MinMaxLayoutProps> = (
   }, []);
 
 
-  const generateDOM = (): JSX.Element[] => {
+  const getLoadingLayout = (): JSX.Element[] => {
     return _.map(layout, (l) => {
       return (
-          <Card variant="outlined" key={l.i} data-grid={l}>
-            <CardContent>{l.i}</CardContent>
-          </Card>
+        <Card variant="outlined" key={l.i} data-grid={l}>
+          <CardContent>{l.i}</CardContent>
+        </Card>
       );
     });
   };
@@ -56,22 +58,26 @@ const GridLayout: React.FC<MinMaxLayoutProps> = (
   };
 
   return (
-      <ResponsiveReactGridLayout
-          onLayoutChange={handleLayoutChange}
-          isDraggable={isDraggable }
-          isResizable={isResizable}
-          isDroppable={editMode && false}
-          onDrop={(elemParams) => {
-            onDroppedItem(elemParams.pop());
-          }}
-          style={{
-            minHeight: '200px',
-          }}
-          rowHeight={rowHeight}
-          cols={cols}
-      >
-        {layout}
-      </ResponsiveReactGridLayout>
+    <ResponsiveReactGridLayout
+      onLayoutChange={handleLayoutChange}
+      isDraggable={isDraggable}
+      isResizable={isResizable}
+      isDroppable={editMode && false}
+      onDrop={(elemParams) => {
+        onDroppedItem(elemParams.pop());
+      }}
+      style={{
+        minHeight: '200px',
+      }}
+      rowHeight={rowHeight}
+      cols={cols}
+    >
+      {loading
+        ? getLoadingLayout()
+        : layout
+
+      }
+    </ResponsiveReactGridLayout>
   );
 };
 

@@ -57,6 +57,7 @@ import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
+import ButtonBoardItem from "../../../Components/BordItem/Button.boardItem";
 
 type PageParamsType = {
   boardId: string;
@@ -80,9 +81,10 @@ export const BoardPage = () => {
   const [openEditBoardDialog, setOpenEditBoardDialog] = useState(false);
   const [openShareDialog, setOpenShareDialog] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [switchPublic, setSwitchPublic] = useState(false);
+  const [isPublicSwitch, setIsPublicSwitch] = useState(false);
   const [selectedItemCategory, setSelectedItemCategory]: [BoardItemCategory, (posts: BoardItemCategory) => void] = useState(null);
   const [selectedItem, setSelectedItem]: [BoardItem, (posts: BoardItem) => void] = useState(null);
+  const [publicLink, setPublicLink] = useState(null);
 
   const breadcrumbs = [
     <Link
@@ -108,7 +110,8 @@ export const BoardPage = () => {
     const _boardItems = await getBoardItems(boardId)
     setBoard(_board);
     setBoardItems(_boardItems);
-    setSwitchPublic(_board.public)
+    setIsPublicSwitch(_board.public)
+    setPublicLink(_board.publicLink)
     setLayout(layoutFormatter(_boardItems));
   }
 
@@ -121,7 +124,10 @@ export const BoardPage = () => {
     handleCloseDialogs()
     setUpdatedTime(getUpdatedTime());
     fetchData()
-      .then(() => setLoading(false))
+      .then(() => {
+        setLoading(false)
+        setSelectLoading(false)
+      })
       .catch((err) => {
         setAlertEvent(getReasonAlert(err));
         setLoading(false)
@@ -191,15 +197,12 @@ export const BoardPage = () => {
       )
   }
 
-  const handleSaveBordLayout = () => {
+  /*const handleSaveBordLayout = () => {
     setLoading(true)
     boardItems.forEach((item) => {
-      const newItem = boardItems.find((i) => i.id === item.id)
       const layoutItem = layout.find((l) => l.i === item.id.toString())
-      if (newItem) {
         if (layoutItem) {
-          console.log(newItem)
-          updateBoardItem(newItem?.id, {
+          updateBoardItem(item?.id, {
             ...item,
             x: layoutItem.x,
             y: layoutItem.y,
@@ -216,13 +219,53 @@ export const BoardPage = () => {
         } else {
           console.log("non ho trovato il layout")
         }
-      } else {
-        console.log("non ho trovato l'item")
-      }
     })
     setLoading(false)
     setEditMode(false)
-  }
+  }*/
+
+  const handleSaveBordLayout = async () => {
+    setLoading(true);
+
+    try {
+      for (const item of boardItems) {
+        const layoutItem = layout.find((l) => l.i === item.id.toString());
+
+        if (layoutItem) {
+          console.log(item);
+          const updatedItem = {
+            ...item,
+            x: layoutItem.x,
+            y: layoutItem.y,
+            w: layoutItem.w,
+            h: layoutItem.h,
+          };
+
+          await updateBoardItem(item.id, updatedItem);
+
+        } else {
+          setAlertEvent({
+            message: "Errore nel salvataggio del layout ",
+            severity: "error",
+          });
+        }
+      }
+      setAlertEvent({
+        message: "Layout salvato con successo",
+        severity: "success",
+      });
+    } catch (err) {
+      setAlertEvent(getReasonAlert(err));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitBoardLayout = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await handleSaveBordLayout();
+    setEditMode(false);
+  };
 
   const handleSubmitEditBoard = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -244,7 +287,7 @@ export const BoardPage = () => {
 
   };
 
-  const handleSubmitEditItem = (event: React.FormEvent<HTMLFormElement>, item: BoardItem) => {
+  const handleSubmitEditItem = async (event: React.FormEvent<HTMLFormElement>, item: BoardItem) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const title = data.get('title') as string;
@@ -252,7 +295,7 @@ export const BoardPage = () => {
     const url = data.get('url') as string;
 
     setLoading(true)
-    updateBoardItem(item.id, {
+    await updateBoardItem(item.id, {
       ...item,
       title: title,
       subtitle: subtitle,
@@ -268,6 +311,32 @@ export const BoardPage = () => {
           setLoading(false)
         }
       )
+  }
+
+  const handleShareBoard = () => {
+    setSelectLoading(true)
+    updateBoard(boardId, {
+      ...board,
+      public: !isPublicSwitch,
+      publicLink: !isPublicSwitch ? `https://dot-board.web.app/app/boards/${boardId}/guest` : null
+    })
+      .then(() => {
+        setPublicLink(!isPublicSwitch ? `https://dot-board.web.app/app/boards/${boardId}guest` : null)
+        // ad 1 sec delay to show the loading
+        setTimeout(() => {
+          setSelectLoading(false)
+        }, 800)
+      })
+      .catch((err) => {
+          setAlertEvent(getReasonAlert(err));
+          setLoading(false)
+        }
+      )
+  }
+
+  const handleShareSwitch = () => {
+    setIsPublicSwitch(!isPublicSwitch)
+    handleShareBoard()
   }
 
   const handleCancelEdit = () => {
@@ -295,7 +364,7 @@ export const BoardPage = () => {
     return bottomPosition;
   }
 
-  function getOnEdit(item: BoardItem) {
+  function getOnEditItem(item: BoardItem) {
     return () => {
       setSelectedItemCategory(item.category)
       setSelectedItem(item)
@@ -315,8 +384,10 @@ export const BoardPage = () => {
                   title={item?.title}
                   subtitle={item?.subtitle}
                   editMode={editMode}
-                  onEdit={getOnEdit(item)
+                  onEdit={getOnEditItem(item)
                   }
+                  onClick={() => {
+                  }}
                   isLoading={loading}
                 />
               </div>
@@ -328,7 +399,7 @@ export const BoardPage = () => {
                   title={item?.title}
                   url={item?.url}
                   editMode={editMode}
-                  onEdit={getOnEdit(item)}
+                  onEdit={getOnEditItem(item)}
                   isLoading={loading}
                 />
               </div>
@@ -339,16 +410,21 @@ export const BoardPage = () => {
                 <WeatherBoardItem
                   city={item?.title}
                   editMode={editMode}
-                  onEdit={getOnEdit(item)}
+                  onEdit={getOnEditItem(item)}
                   isLoading={loading}
                 />
               </div>
             );
           case "API":
             return (
-              <Card variant="outlined" key={l.i} data-grid={l}>
-                <CardContent>{l.i}</CardContent>
-              </Card>
+              <div key={l.i} data-grid={l}>
+                <ButtonBoardItem
+                  title={item?.title}
+                  editMode={editMode}
+                  onEdit={getOnEditItem(item)}
+                  isLoading={loading}
+                />
+              </div>
             );
           case "IFRAME":
             return (
@@ -359,7 +435,7 @@ export const BoardPage = () => {
                   editMode={editMode}
                   onClick={() => {
                   }}
-                  onEdit={getOnEdit(item)}
+                  onEdit={getOnEditItem(item)}
                   isLoading={loading}
                 />
               </div>
@@ -472,6 +548,36 @@ export const BoardPage = () => {
             </>
           </Grid>
         )
+      case "API":
+        return (
+          <Grid item xs={12}>
+            <>
+              <Grid item xs={12}>
+                <TextField
+                  id="title"
+                  name="title"
+                  label="Titolo"
+                  autoFocus
+                  defaultValue={Boolean(selectedItem) ? selectedItem.title : null}
+                  autoComplete="title"
+                  fullWidth
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  id="url"
+                  name="url"
+                  label="Src"
+                  defaultValue={Boolean(selectedItem) ? selectedItem.url : null}
+                  autoComplete="url"
+                  fullWidth
+                  required
+                />
+              </Grid>
+            </>
+          </Grid>
+        )
       default:
         return (
           <></>
@@ -507,7 +613,7 @@ export const BoardPage = () => {
       allowModify={{edit: true, delete: true}}
       onDelete={handleDelete}
       onCancelEdit={handleCancelEdit}
-      onSubmit={handleSaveBordLayout}
+      onSubmit={handleSubmitBoardLayout}
       onRefresh={handleRefresh}
       cardChildren={false}
       editChildren={
@@ -528,6 +634,11 @@ export const BoardPage = () => {
                   </BaseBoardItem>
                 </Grid>
               </Grid>*/}
+          <Box pb={1} pl={2}>
+            <Typography variant="body2" color="text.secondary">
+              {board?.description}
+            </Typography>
+          </Box>
           <Box
             sx={{
               borderRadius: 32,
@@ -616,14 +727,22 @@ export const BoardPage = () => {
       }
       baseChildren={
         <>
-          <Box pb={1}>
-            <Typography variant="body2" color="text.secondary">
-              {board?.description}
-            </Typography>
+          <Box
+            mt={2}
+            style={{
+              borderRadius: 32,
+              padding: 16,
+            }}
+          >
+            <Box pb={1} pl={2}>
+              <Typography variant="body2" color="text.secondary">
+                {board?.description}
+              </Typography>
+            </Box>
+            {layout.length > 0 ?
+              <GridLayout isResizable={false} isDraggable={false} layout={generateLayout(layout)}/>
+              : <Box py={2}><NoContentIcon caption="Non ci sono elementi, modifica per aggiungere"/></Box>}
           </Box>
-          {layout.length > 0 ?
-            <GridLayout isResizable={false} isDraggable={false} layout={generateLayout(layout)}/>
-            : <Box py={2}><NoContentIcon caption="Non ci sono elementi, modifica per aggiungere"/></Box>}
         </>
       }
     >
@@ -718,23 +837,22 @@ export const BoardPage = () => {
         TransitionComponent={Fade}
         fullScreen={isMobile}
       >
-        {loading && <LinearProgress color="primary"/>}
+        {selectLoading && <LinearProgress color="primary"/>}
         <DialogTitle>
           <Typography variant="h6">{"Share link"}</Typography>
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            <Box component="form" id="ShareDialog" noValidate onSubmit={() => {
-            }}>
+            <Box id="ShareDialog">
               <Grid container direction="column" spacing={2}>
-
                 <Grid item xs={12}>
                   <FormGroup>
                     <FormControlLabel
                       control={
                         <Switch
-                          checked={switchPublic}
-                          onChange={() => setSwitchPublic(!switchPublic)}
+                          disabled={selectLoading}
+                          checked={isPublicSwitch}
+                          onChange={handleShareSwitch}
                         />
                       }
                       label="Public"
@@ -744,20 +862,19 @@ export const BoardPage = () => {
                 <Grid item xs={12}>
                   <TextField
                     id="link"
-                    label="Link"
                     fullWidth
-                    disabled={!switchPublic}
+                    disabled={!isPublicSwitch}
                     variant="outlined"
-                    value={board?.publicLink}
+                    value={publicLink}
                   />
                 </Grid>
                 <Grid item xs={12}>
                   <LoadingButton
                     color="primary"
                     loading={loading}
-                    disabled={!switchPublic}
+                    disabled={!isPublicSwitch}
                     startIcon={<LinkOutlinedIcon/>}
-                    onClick={() => handleDeleteItem(selectedItem)}
+                    onClick={() => navigator.clipboard.writeText(publicLink)}
                   >
                     Copia link
                   </LoadingButton>
@@ -769,16 +886,7 @@ export const BoardPage = () => {
         <Box pr={2} pb={2}>
           <DialogActions>
             <Button color="inherit" onClick={handleCloseDialogs}>
-              <Box mx={2}>Cancella</Box>
-            </Button>
-            <Button
-              color="primary"
-              type="submit"
-              form="ShareDialog"
-            >
-              <Box mx={2}>
-                Salva
-              </Box>
+              <Box mx={2}>Chiudi</Box>
             </Button>
           </DialogActions>
         </Box>

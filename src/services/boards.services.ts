@@ -25,118 +25,131 @@ export const defaultBoard: Board = {};
 export async function getAllBoards(): Promise<Board[]> {
   let data = [];
   await servicePath
-      .get('/boards', {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 200) {
-          return new Error(res.data["message"])
-        }
-        data = res.data
-      })
+    .get('/boards', {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        return new Error(res.data["message"])
+      }
+      data = res.data
+    })
   return data;
 }
 
 export async function getBoard(id: Id): Promise<Board> {
   let data = {};
   await servicePath
-      .get(`/boards/${id}`, {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 200) {
-          return new Error(res.data["message"])
-        }
-        data = res.data
-      })
+    .get(`/boards/${id}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        return new Error(res.data["message"])
+      }
+      data = res.data
+    })
   return data;
 }
 
 export async function createBoard(board: Board): Promise<Board> {
   let data = {};
   await servicePath
-      .post('/boards', board, {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 201) {
-          return new Error(res.data["message"])
-        }
-        data = res.data
-      })
+    .post('/boards', board, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 201) {
+        return new Error(res.data["message"])
+      }
+      data = res.data
+    })
   return data;
 }
 
 export async function updateBoard(id: Id, board: Board): Promise<AxiosResponse> {
   let response = {} as AxiosResponse;
   await servicePath
-      .put(`/boards/${id}`, board, {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 200) {
-          return new Error(res.data["message"])
-        }
-        response = res
-      })
+    .put(`/boards/${id}`, board, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        return new Error(res.data["message"])
+      }
+      response = res
+    })
   return response;
 }
 
 export async function deleteBoard(id: Id): Promise<AxiosResponse> {
   let response = {} as AxiosResponse;
   await servicePath
-      .delete(`/boards/${id}`, {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 200) {
-          return new Error(res.data["message"])
-        }
-        response = res
-      })
+    .delete(`/boards/${id}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        return new Error(res.data["message"])
+      }
+      response = res
+    })
   return response;
 }
 
 export async function getBoardItems(id: Id): Promise<BoardItem[]> {
   let data = [];
   await servicePath
-      .get(`/boards/${id}/boardItems`, {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 200) {
-          return new Error(res.data["message"])
-        }
-        data = res.data
-      })
+    .get(`/boards/${id}/boardItems`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        return new Error(res.data["message"])
+      }
+      data = res.data
+    })
   return data;
 }
 
 export async function addBoardItem(id: Id, boardItem: BoardItem): Promise<BoardItem> {
   let data = {};
   await servicePath
-      .post(`/boards/${id}/boardItems`, boardItem, {
-        headers: {
-          Authorization: `Bearer ${getCookie('token')}`
-        }
-      })
-      .then(res => {
-        if (res.status !== 201) {
-          return new Error(res.data["message"])
-        }
-        data = res.data
-      })
+    .post(`/boards/${id}/boardItems`, boardItem, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+    .then(res => {
+      if (res.status !== 201) {
+        return new Error(res.data["message"])
+      }
+      data = res.data
+    })
+  return data;
+}
+
+export async function getPublicBoard(id: Id): Promise<{board: Board, username: string}> {
+  let data = {board: null, username: null};
+  await servicePath
+    .get(`/boards/${id}/public`)
+    .then(res => {
+      if (res.status !== 200) {
+        return new Error(res.data["message"])
+      }
+      data = res.data
+    })
   return data;
 }

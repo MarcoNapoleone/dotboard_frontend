@@ -84,14 +84,14 @@ export const ConfirmationProvider: React.FC<ConfirmationProviderProps> = ({child
           <DialogTitle>{!!confirmation.title ? confirmation.title : "Delete confirmation"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="delete-dialog-slide-description">
-              {"You are about to delete this item. Are you sure you want to continue?"}
+              {"Stai per eliminare un elemento. Sei sicuro di voler procedere?"}
             </DialogContentText>
           </DialogContent>
           <Box pr={2} pb={2}>
             <DialogActions>
               <Button color="inherit" onClick={handleCancel}>
                 <Box mx={2}>
-                  cancel
+                  Annulla
                 </Box>
               </Button>
               <Button
@@ -105,7 +105,7 @@ export const ConfirmationProvider: React.FC<ConfirmationProviderProps> = ({child
                 onClick={handleConfirm}
               >
                 <Box mx={2}>
-                  delete
+                  Elimina
                 </Box>
               </Button>
             </DialogActions>

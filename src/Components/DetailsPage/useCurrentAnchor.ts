@@ -7,7 +7,6 @@ export function useCurrentAnchor(anchors: Anchor[]) {
   const observer = useRef()
   const [activeId, setActiveId] = useState('')
   const elements = document.querySelectorAll(anchors.map((anchor) => `#${anchor.id}`).join(','))
-  console.log(elements)
 
   useEffect(() => {
     const handleObserver = (entries: any) => {
